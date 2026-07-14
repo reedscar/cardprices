@@ -37,6 +37,11 @@ export default function App() {
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       const data = await res.json()
       setPlayer(data)
+    } catch (err) {
+      console.error(err)
+      setError('Could not load player data')
+    } finally {
+      setLoading(false)
     }
   }
 
