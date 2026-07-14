@@ -9,6 +9,7 @@ export default function App() {
 
   useEffect(() => {
     fetchCards(query)
+    fetchPlayer()
   }, [])
 
   async function fetchCards(searchTerm) {
@@ -29,7 +30,7 @@ export default function App() {
     }
   }
 
-  async function fetchPlayer(searchTerm) {
+  async function fetchPlayer() {
     setLoading(true)
     setError(null)
     try {
