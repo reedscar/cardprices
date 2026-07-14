@@ -37,7 +37,7 @@ export default function App() {
       const res = await fetch(`https://statsapi.mlb.com/api/v1/people/660271`)
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       const data = await res.json()
-      setPlayer(data)
+      setPlayer(data.people?.[0]?.fullName || 'Unknown player')
     } catch (err) {
       console.error(err)
       setError('Could not load player data')
