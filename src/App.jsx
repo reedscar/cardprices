@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 export default function App() {
   const [cards, setCards] = useState([])
+  const [player, setPlayer] = useState('no player selected')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('baseball card')
@@ -28,20 +29,35 @@ export default function App() {
     }
   }
 
-  function handleSearch(e) {
+  async function fetchPlayer(searchTerm) {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`https://statsapi.mlb.com/api/v1/people/660271`)
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+      const data = await res.json()
+      setPlayer(data)
+    }
+  }
+
+  function handleCardSearch(e) {
     e.preventDefault()
     fetchCards(query)
   }
 
   return (
     <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'sans-serif', padding: '0 16px' }}>
+      <div>
+        {player}
+        <br></br>
+      </div>
       <h1>⚾ Baseball Card Tracker</h1>
       <p style={{ color: '#555' }}>
         Search active eBay listings for baseball cards. (Swap this in for your
         daily "most active card" logic once the pipeline is built.)
       </p>
 
-      <form onSubmit={handleSearch} style={{ marginBottom: 24 }}>
+      <form onSubmit={handleCardSearch} style={{ marginBottom: 24 }}>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
