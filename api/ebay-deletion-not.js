@@ -2,7 +2,7 @@
 import crypto from 'crypto'
 
 const VERIFICATION_TOKEN = process.env.EBAY_VERIFICATION_TOKEN
-const ENDPOINT_URL = 'https://cardprices-2uqjran2e-siamesecat.vercel.app/api/ebay-deletion-not'
+const ENDPOINT_URL = 'https://cardprices-em1tvrnqb-siamesecat.vercel.app/api/ebay-deletion-not'
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
