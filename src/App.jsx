@@ -6,10 +6,12 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('baseball card')
+  const [playerId, setPlayerId] = useState('000000')
+  const [stats, setStats] = useState(null)
 
   useEffect(() => {
     fetchCards(query)
-    fetchPlayer()
+    fetchPlayer('Ohtani')
   }, [])
 
   async function fetchCards(searchTerm) {
@@ -30,17 +32,34 @@ export default function App() {
     }
   }
 
-  async function fetchPlayer() {
+  async function fetchPlayer(searchTerm) {
     setLoading(true)
     setError(null)
+    setStats(null)
+
+    let id
     try {
-      const res = await fetch(`https://statsapi.mlb.com/api/v1/people/660271`)
+      const res = await fetch(`https://statsapi.mlb.com/api/v1/people/search?names=${encodeURIComponent(searchTerm)}`)
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       const data = await res.json()
+      id = data.people?.[0]?.id
+      setPlayerId(id || '000000')
       setPlayer(data.people?.[0]?.fullName || 'Unknown player')
     } catch (err) {
       console.error(err)
       setError('Could not load player data')
+    } finally {
+      setLoading(false)
+    }
+
+    try {
+      const statres = await fetch(`https://statsapi.mlb.com/api/v1/people/${encodeURIComponent(id)}/stats?stats=gamelog&group=hitting&season=2026`)
+      if (!statres.ok) throw new Error(`Request failed: ${statres.status}`)
+      const data = await statres.json()
+      setStats(data.stats[0].splits.at(-1) || null)
+    } catch (err) {
+      console.error(err)
+      setError('Could not load player stats')
     } finally {
       setLoading(false)
     }
@@ -49,6 +68,7 @@ export default function App() {
   function handleCardSearch(e) {
     e.preventDefault()
     fetchCards(query)
+    fetchPlayer(query)
   }
 
   return (
@@ -56,6 +76,20 @@ export default function App() {
       <div>
         {player}
         <br></br>
+        <img 
+          src={`https://img.mlbstatic.com/mlb-photos/image/upload/w_360,q_100/v1/people/${playerId}/headshot/67/current`}
+          alt={player}
+          style={{ width: 120, borderRadius: 8 }}
+        />
+        <br></br>
+        {stats && (
+          <>
+          <p>
+            {stats.date} vs {stats.opponent?.name}: {stats.stat?.summary}
+          </p>
+          <p>{stats.stat?.summary}</p>
+          </>
+        )}
       </div>
       <h1>⚾ Baseball Card Tracker</h1>
       <p style={{ color: '#555' }}>

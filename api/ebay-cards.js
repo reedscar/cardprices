@@ -13,6 +13,8 @@ async function getEbayToken() {
     return cachedToken
   }
 
+  console.log('Client ID loaded', process.env.EBAY_CLIENT_ID ? 'yes' : 'MISSING')
+
   const credentials = Buffer.from(
     `${process.env.EBAY_CLIENT_ID}:${process.env.EBAY_CLIENT_SECRET}`
   ).toString('base64')
